@@ -1,14 +1,13 @@
 
 export const apiOptions = {
-    baseUrl: 'https://mesto.nomoreparties.co/v1/cohort-27',
+    baseUrl: 'https://api.mesto-project.nomoredomains.rocks',
     headers: {
-        authorization: 'e0a0481d-9fe7-4aea-8a7b-5b74aae0ea67',
         'Content-Type': 'application/json'
     }
 }
 
 export const apiAuthOptions = {
-    baseUrl: 'https://auth.nomoreparties.co',
+    baseUrl: 'https://api.mesto-project.nomoredomains.rocks',
 }
 
 export const formConfig = {

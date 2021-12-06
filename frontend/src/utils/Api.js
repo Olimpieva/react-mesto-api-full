@@ -19,7 +19,7 @@ class Api {
 
     getInitialCards() {
         return this._sendRequest(`cards`, {
-            headers: this._headers
+            headers: this._headers,
         })
     }
 
