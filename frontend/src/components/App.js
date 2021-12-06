@@ -39,7 +39,7 @@ function App() {
     auth.checkToken(token)
       .then((tokenData) => {
         setLoggedIn(true);
-        setEmail(tokenData.data.email)
+        setEmail(tokenData.email)
         history.push('/');
       })
       .catch(error => {
@@ -97,7 +97,7 @@ function App() {
   useEffect(() => {
     api.getInitialCards()
       .then(initialCards => {
-        setCards(initialCards);
+        setCards(initialCards.data);
       })
       .catch(error => console.log(`Произошла ошибка: ${error}`));
   }, [])
@@ -138,7 +138,7 @@ function App() {
   function handleUpdateUser(newUserInfo) {
     api.updateUserInfo(newUserInfo)
       .then((updatedUserInfo) => {
-        setCurrentUser(updatedUserInfo);
+        setCurrentUser(updatedUserInfo.data);
         closeAllPopups();
       })
       .catch(error => console.log(`Произошла ошибка: ${error}`));
@@ -149,7 +149,8 @@ function App() {
   }
 
   function handleCardLike(card) {
-    const isLiked = card.likes.some(item => item._id === currentUser._id);
+
+    const isLiked = card.likes.some(id => id === currentUser._id);
 
     api.changeLikeCardStatus(card._id, isLiked)
       .then((updatedCard) => {

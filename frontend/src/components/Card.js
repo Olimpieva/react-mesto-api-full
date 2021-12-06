@@ -7,7 +7,7 @@ function Card(props) {
     const { card, onCardClick, onCardLike, onCardDelete } = props;
     const currentUser = useContext(CurrentUserContext);
 
-    const isLiked = card.likes.some((item) => item._id === currentUser._id);
+    const isLiked = card.likes.some((id) => id === currentUser._id);
 
     function handleCardClick() {
         onCardClick(card);
@@ -37,7 +37,7 @@ function Card(props) {
                     <span className="card__like-counter">{card.likes.length}</span>
                 </div>
             </div>
-            {card.owner._id === currentUser._id && (
+            {card.owner === currentUser._id && (
                 <button className="card__remove"
                     type="button"
                     aria-label="Удалить изображение"

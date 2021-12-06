@@ -7,7 +7,7 @@ class ApiAuth {
     }
 
     _sendRequest(path, requestOptions) {
-        return fetch(`${this._url}/${path}`, requestOptions)
+        return fetch(`${this._url}/${path}`, { ...requestOptions, credentials: 'include' })
             .then((res) => {
                 if (res.ok) {
                     return res.json()

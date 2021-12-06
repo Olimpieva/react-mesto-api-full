@@ -8,7 +8,7 @@ class Api {
     }
 
     _sendRequest(path, requestOptions) {
-        return fetch(`${this._url}/${path}`, requestOptions)
+        return fetch(`${this._url}/${path}`, { ...requestOptions, credentials: 'include' })
             .then((res) => {
                 if (res.ok) {
                     return res.json()
@@ -69,13 +69,14 @@ class Api {
     }
 
     changeLikeCardStatus(cardId, isLiked) {
+        console.log({ isLiked });
         if (isLiked) {
-            return this._sendRequest(`cards/likes/${cardId}`, {
+            return this._sendRequest(`cards/${cardId}/likes`, {
                 method: 'DELETE',
                 headers: this._headers,
             })
         } else {
-            return this._sendRequest(`cards/likes/${cardId}`, {
+            return this._sendRequest(`cards/${cardId}/likes`, {
                 method: 'PUT',
                 headers: this._headers,
             })
