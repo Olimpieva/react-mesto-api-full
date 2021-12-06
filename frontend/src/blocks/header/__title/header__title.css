@@ -1,0 +1,16 @@
+
+.header__title {
+  margin: 0 0 18px;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1.21;
+  font-weight: 500;
+  color: #eee8e8;
+}
+
+@media screen and (min-width: 425px) {
+  
+    .header__title {
+        margin-right: 24px;
+    }
+  }

@@ -1,0 +1,15 @@
+
+.auth {
+    min-width: 260px;
+    width: 81.25%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media screen and (min-width: 425px) {
+    
+    .auth {
+      width: 28%;
+    }
+  }

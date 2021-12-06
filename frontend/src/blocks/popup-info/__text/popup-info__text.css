@@ -1,0 +1,17 @@
+
+.popup-info__text {
+    color: black;
+    margin: 0;
+    font-weight: 900;
+    font-size: 20px;
+    line-height: 1.21;
+    text-align: center;
+  }
+
+
+  @media screen and (min-width: 768px) {
+    
+    .popup-info__text {
+      font-size: 24px;
+    }
+  }

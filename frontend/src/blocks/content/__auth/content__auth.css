@@ -1,0 +1,13 @@
+
+.content__auth {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+@media screen and (min-width: 768px) {
+    
+    .content__auth  {
+        margin-top: 60px;
+        margin-bottom: 60px;
+    }
+  }

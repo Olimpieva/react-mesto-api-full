@@ -1,0 +1,32 @@
+
+.card {
+    min-height: 361px;
+    padding: 0;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    list-style: none;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #FFF;
+    transition: all ease-in-out 0.3s;
+}
+
+.card:last-child {
+    margin-bottom: 0;
+}
+
+.card:hover {
+    transform: scale(1.02, 1.02);
+    opacity: .92;
+}
+
+@media screen and (min-width: 700px) {
+
+    .card {
+        margin: 0;
+    }
+}
+
+

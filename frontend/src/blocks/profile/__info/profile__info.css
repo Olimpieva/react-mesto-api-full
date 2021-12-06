@@ -1,0 +1,23 @@
+
+.profile__info {
+    margin-bottom: 34px;
+    display: grid;
+    grid-template-columns: max-content min-content;
+    color: #FFF;
+    grid-gap: 7px 10px;
+  }
+  
+  @media screen and (min-width: 700px) {
+
+    .profile__info {
+      margin: 0;
+      grid-gap: 10px 7px;
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+
+    .profile__info {
+      grid-gap: 10px 18px;
+    }
+  }
