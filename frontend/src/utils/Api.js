@@ -69,7 +69,6 @@ class Api {
     }
 
     changeLikeCardStatus(cardId, isLiked) {
-        console.log({ isLiked });
         if (isLiked) {
             return this._sendRequest(`cards/${cardId}/likes`, {
                 method: 'DELETE',

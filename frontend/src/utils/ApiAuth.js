@@ -34,12 +34,17 @@ class ApiAuth {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json",
             },
             body: JSON.stringify({
                 password: password,
                 email: email,
             })
         })
+    }
+
+    logout() {
+        return this._sendRequest(`signout`, {})
     }
 
     checkToken(token) {

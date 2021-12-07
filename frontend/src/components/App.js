@@ -35,84 +35,81 @@ function App() {
   const history = useHistory();
   const location = useLocation();
 
-  function checkTokenValidity(token) {
-    auth.checkToken(token)
-      .then((tokenData) => {
-        setLoggedIn(true);
-        setEmail(tokenData.email)
-        history.push('/');
-      })
-      .catch(error => {
-        console.log(`Произошла ошибка: ${error}`);
-        setStatus(false);
-        setIsInfoToolTipOpen(true);
-      });
+  async function getCards() {
+    let initialCards;
+
+    try {
+      initialCards = await api.getInitialCards();
+    } catch (error) {
+      return console.log(error);
+    }
+
+    setCards(initialCards);
   }
 
-  React.useEffect(() => {
-    const jwt = localStorage.getItem('jwt');
-    if (jwt) {
-      checkTokenValidity(jwt);
+  async function checkUserValidity() {
+    let userData;
+
+    try {
+      userData = await auth.checkToken();
+    } catch (error) {
+      return console.log(error);
     }
+
+    setLoggedIn(true);
+    setEmail(userData.email);
+    setCurrentUser(userData);
+    getCards();
+    history.push('/');
+  }
+
+  useEffect(() => {
+    checkUserValidity();
   }, []);
 
-  function handleRegister(userData) {
-    auth.register(userData)
-      .then((userData) => {
-        setStatus(true);
-      })
-      .catch(error => {
-        console.log(`Произошла ошибка: ${error}`);
-        setStatus(false);
-      })
-      .finally(() => setIsInfoToolTipOpen(true))
+  async function handleRegister(userData) {
+    try {
+      await auth.register(userData);
+      setStatus(true);
+    } catch (error) {
+      console.log(error);
+      setStatus(false);
+    } finally {
+      setIsInfoToolTipOpen(true)
+    }
   };
 
-  function handleLogin(userData) {
-    auth.login(userData)
-      .then((userData) => {
-        localStorage.setItem('jwt', userData.token);
-        checkTokenValidity(userData.token);
-      })
-      .catch(error => {
-        console.log(`Произошла ошибка: ${error}`);
-        setStatus(false);
-        setIsInfoToolTipOpen(true);
-      });
-  };
-
-  function handleLogout() {
-    localStorage.removeItem('jwt');
-    setLoggedIn(false);
-  }
-
-  useEffect(() => {
-    api.getUserInfo()
-      .then(userData => {
-        setCurrentUser(userData);
-      })
-      .catch(error => console.log(`Произошла ошибка: ${error}`));
-  }, [])
-
-  useEffect(() => {
-    api.getInitialCards()
-      .then(initialCards => {
-        setCards(initialCards.data);
-      })
-      .catch(error => console.log(`Произошла ошибка: ${error}`));
-  }, [])
-
-  useEffect(() => {
-    const closeByEscape = (e) => {
-      if (e.key === 'Escape') {
-        closeAllPopups();
-      }
+  async function handleLogin(userData) {
+    try {
+      await auth.login(userData);
+    } catch (error) {
+      setStatus(false);
+      setIsInfoToolTipOpen(true);
+      return console.log(error);
     }
 
-    document.addEventListener('keydown', closeByEscape);
+    checkUserValidity();
+  };
 
-    return () => document.removeEventListener('keydown', closeByEscape);
-  }, [])
+  async function handleLogout() {
+    try {
+      auth.logout()
+    } catch (error) {
+      return console.log(error);
+    }
+
+    setLoggedIn(false);
+    setCurrentUser(null);
+  }
+
+  function closeAllPopups() {
+    setIsInfoToolTipOpen(false);
+    setIsEditAvatarPopupOpen(false);
+    setIsEditProfilePopupOpen(false);
+    setIsAddPlacePopupOpen(false);
+    setSelectedCard(null);
+    setCardToDelete(null);
+  }
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -126,75 +123,95 @@ function App() {
     setIsAddPlacePopupOpen(true);
   }
 
-  function handleUpdateAvatar({ avatar }) {
-    api.updateAvatar(avatar)
-      .then((updatedUserInfo) => {
-        setCurrentUser(updatedUserInfo);
-        closeAllPopups();
-      })
-      .catch(error => console.log(`Произошла ошибка: ${error}`));
+  async function handleUpdateAvatar({ avatar }) {
+    let updatedUserInfo;
+
+    try {
+      updatedUserInfo = await api.updateAvatar(avatar);
+    } catch (error) {
+      return console.log(error);
+    }
+
+    setCurrentUser(updatedUserInfo);
+    closeAllPopups();
   }
 
-  function handleUpdateUser(newUserInfo) {
-    api.updateUserInfo(newUserInfo)
-      .then((updatedUserInfo) => {
-        setCurrentUser(updatedUserInfo.data);
-        closeAllPopups();
-      })
-      .catch(error => console.log(`Произошла ошибка: ${error}`));
+  async function handleUpdateUser(newUserInfo) {
+    let updatedUserInfo;
+
+    try {
+      updatedUserInfo = await api.updateUserInfo(newUserInfo);
+    } catch (error) {
+      return console.log(error);
+    }
+
+    setCurrentUser(updatedUserInfo);
+    closeAllPopups();
   }
 
   function handleCardClick(card) {
     setSelectedCard(card);
   }
 
-  function handleCardLike(card) {
-
+  async function handleCardLike(card) {
     const isLiked = card.likes.some(id => id === currentUser._id);
+    let updatedCard;
 
-    api.changeLikeCardStatus(card._id, isLiked)
-      .then((updatedCard) => {
-        setCards((prevCards) => {
-          return prevCards.map((prevCard) => prevCard._id === card._id ? updatedCard : prevCard);
-        });
-      })
-      .catch(error => console.log(`Произошла ошибка: ${error}`));
+    try {
+      updatedCard = await api.changeLikeCardStatus(card._id, isLiked);
+    } catch (error) {
+      return console.log(error);
+    }
+
+    setCards((prevCards) => {
+      return prevCards.map((prevCard) => prevCard._id === card._id ? updatedCard : prevCard);
+    });
   }
+
   function handleCardTrashClick(card) {
     setCardToDelete(card)
   }
 
-  function handleAddPlaceSubmit(cardInfo) {
-    api.addCard(cardInfo)
-      .then((newCard) => {
-        setCards([newCard, ...cards]);
+  async function handleAddPlaceSubmit(cardInfo) {
+    let newCard;
+
+    try {
+      newCard = await api.addCard(cardInfo);
+    } catch (error) {
+      return console.log(error);
+    }
+
+    setCards([newCard, ...cards]);
+    closeAllPopups();
+  }
+
+  async function handleDeleteCard(card) {
+    try {
+      await api.removeCard(card._id)
+    } catch (error) {
+      return console.log(error);
+    }
+
+    setCards((prevCards) => {
+      closeAllPopups();
+      return prevCards.filter((prevCard) => prevCard._id !== card._id);
+    });
+  }
+
+  useEffect(() => {
+    const closeByEscape = (e) => {
+      if (e.key === 'Escape') {
         closeAllPopups();
-      })
-      .catch(error => console.log(`Произошла ошибка: ${error}`));
-  }
+      }
+    }
 
-  function handleDeleteCard(card) {
-    api.removeCard(card._id)
-      .then(() => {
-        setCards((prevCards) => {
-          closeAllPopups();
-          return prevCards.filter((prevCard) => prevCard._id !== card._id);
-        });
-      })
-      .catch(error => console.log(`Произошла ошибка: ${error}`));
-  }
+    document.addEventListener('keydown', closeByEscape);
 
-  function closeAllPopups() {
-    setIsInfoToolTipOpen(false);
-    setIsEditAvatarPopupOpen(false);
-    setIsEditProfilePopupOpen(false);
-    setIsAddPlacePopupOpen(false);
-    setSelectedCard(null);
-    setCardToDelete(null);
-  }
+    return () => document.removeEventListener('keydown', closeByEscape);
+  }, [])
 
   return (
-    <CurrentUserContext.Provider value={currentUser}>
+    <CurrentUserContext.Provider value={currentUser || {}}>
       <div className="page">
         <Header
           location={location.pathname}

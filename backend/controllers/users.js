@@ -44,7 +44,7 @@ module.exports.createUser = async (req, res, next) => {
 
     const hash = await bcrypt.hash(password, 10);
 
-    await User.create({
+    const user = await User.create({
       name,
       about,
       avatar,
@@ -53,12 +53,11 @@ module.exports.createUser = async (req, res, next) => {
     });
 
     res.status(OK).send({
-      data: {
-        name,
-        about,
-        avatar,
-        email,
-      },
+      _id: user._id,
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
     });
   } catch (error) {
     let err = error;
@@ -94,6 +93,8 @@ module.exports.login = async (req, res, next) => {
 
     await res.cookie('jwt', token, {
       maxAge: 3600000,
+      sameSite: true,
+      httpOnly: true,
     });
 
     res.status(OK).json({ token, message: 'Авторизация прошла успешно.' });
@@ -120,7 +121,7 @@ module.exports.updateProfile = async (req, res, next) => {
       },
     ).orFail(() => next(new BadRequestError('Переданы некорректные данные при обновлении профиля.')));
 
-    res.status(OK).send({ data: user });
+    res.status(OK).send(user);
   } catch (error) {
     next(error);
   }
@@ -142,6 +143,19 @@ module.exports.updateAvatar = async (req, res, next) => {
     ).orFail(() => next(new BadRequestError('Переданы некорректные данные при обновлении аватара.')));
 
     res.status(OK).send(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports.logout = async (req, res, next) => {
+  try {
+    await res.clearCookie('jwt', {
+      httpOnly: true,
+      sameSite: true,
+    });
+
+    res.status(OK).send({ message: 'Логаут прошёл успешно.' });
   } catch (error) {
     next(error);
   }

@@ -8,7 +8,7 @@ module.exports.getAllCards = async (req, res, next) => {
   let cards;
   try {
     cards = await Card.find({});
-    res.status(OK).send({ data: cards });
+    res.status(OK).send(cards);
   } catch (error) {
     next(error);
   }
@@ -41,7 +41,7 @@ module.exports.removeCard = async (req, res, next) => {
     }
 
     await card.remove();
-    res.status(OK).send({ data: card });
+    res.status(OK).send(card);
   } catch (error) {
     next(error);
   }

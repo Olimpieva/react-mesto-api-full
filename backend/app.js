@@ -10,11 +10,11 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('./middlewares/cors');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
-const { createUser, login } = require('./controllers/users');
+const { createUser, login, logout } = require('./controllers/users');
 const NotFoundError = require('./errors/not-found-error');
 const { urlServer } = require('./utils/constants');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 
 const app = express();
 mongoose.connect(urlServer);
@@ -54,6 +54,8 @@ app.post(
   }),
   login,
 );
+
+app.get('/signout', logout);
 
 app.use(auth);
 app.use('/', routerUsers);
