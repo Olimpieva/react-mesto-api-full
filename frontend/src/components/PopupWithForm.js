@@ -3,7 +3,12 @@ import React, { useRef } from "react";
 
 function PopupWithForm(props) {
 
-    const { name, title, buttonText, isOpen, onClose, onSubmit } = props;
+    const { name, title, buttonText, isOpen, onClose, onSubmit, isButtonEnabled } = props;
+
+    console.log('render')
+
+    console.log({ isButtonEnabled })
+
     const overlayRef = useRef(null);
 
     function onOverlayClick(event) {
@@ -13,17 +18,29 @@ function PopupWithForm(props) {
     }
 
     return (
-        <div className={`popup popup-${name} ${isOpen && 'popup_is-opened'}`} ref={overlayRef} onClick={onOverlayClick}>
+        <div className={`popup popup-${name} ${isOpen && 'popup_is-opened'}`}
+            ref={overlayRef}
+            onClick={onOverlayClick}
+        >
             <div className="popup__container">
-                <form className={`popup__form popup__form-${name}`} name={`popup-${name}`} onSubmit={onSubmit}>
+                <form className={`popup__form popup__form-${name}`}
+                    name={`popup-${name}`}
+                    onSubmit={onSubmit}
+                >
                     <h2 className="popup__title">{title}</h2>
                     {props.children}
-                    <button className="popup__button popup__button_action_save" type="submit">{buttonText}</button>
+                    <button className="popup__button popup__button_action_save"
+                        type="submit"
+                        disabled={!isButtonEnabled}
+                    >
+                        {buttonText}
+                    </button>
                 </form>
                 <button className="popup__button popup__button_action_close"
                     type="button"
                     aria-label="Закрыть окно"
-                    onClick={onClose}></button>
+                    onClick={onClose}
+                ></button>
             </div>
         </div>
     )

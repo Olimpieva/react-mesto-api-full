@@ -17,7 +17,9 @@ function ConfirmationPopup(props) {
             buttonText="Да"
             isOpen={data}
             onClose={onClose}
-            onSubmit={handleSubmit}>
+            onSubmit={handleSubmit}
+            isButtonEnabled={true}
+        >
         </PopupWithForm>
     )
 }

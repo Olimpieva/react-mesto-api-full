@@ -1,22 +1,22 @@
 // import logo from '../logo.svg';
-import React, { useState, useEffect } from 'react';
-import { Route, Switch, withRouter, useHistory, useLocation } from 'react-router-dom';
-
+import React, { useEffect, useState } from 'react';
+import { Route, Switch, useHistory, useLocation, withRouter } from 'react-router-dom';
+import { CurrentUserContext } from '../context/CurrentUserContext';
 import api from '../utils/Api';
 import auth from '../utils/ApiAuth';
-import Header from "./Header";
-import Login from "./Login";
-import Register from "./Register";
-import Main from "./Main";
-import Footer from "./Footer";
-import ImagePopup from './ImagePopup';
-import EditProfilePopup from './EditProfilePopup';
-import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmationPopup from './ConfirmationPopup';
+import EditAvatarPopup from './EditAvatarPopup';
+import EditProfilePopup from './EditProfilePopup';
+import Footer from "./Footer";
+import Header from "./Header";
+import ImagePopup from './ImagePopup';
 import InfoToolTip from './InfoTooltip';
-import { CurrentUserContext } from '../context/CurrentUserContext';
+import Login from "./Login";
+import Main from "./Main";
 import ProtectedRoute from './ProtectedRoute';
+import Register from "./Register";
+
 
 function App() {
 
@@ -31,6 +31,7 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = React.useState('');
   const [status, setStatus] = useState(false);
+  // const [formErrors, setFormErrors] = useState({});
 
   const history = useHistory();
   const location = useLocation();
@@ -210,6 +211,47 @@ function App() {
     return () => document.removeEventListener('keydown', closeByEscape);
   }, [])
 
+  const [isFormValid, setIsFormValid] = useState(
+    {
+      isFormValid: false,
+      errors: {}
+    }
+  )
+
+  function formValidate(input, inputList) {
+    const currentInput = input.id;
+
+    if (!input.validity.valid) {
+      setIsFormValid((properties) => {
+        return {
+          isFormValid: false,
+          errors: {
+            ...properties.errors,
+            [currentInput]: input.validationMessage
+          }
+        };
+      });
+    } else {
+      const nextState = { ...isFormValid };
+
+      nextState.errors = {
+        ...nextState.errors,
+        [currentInput]: ""
+      };
+
+      const invalidInput = Object.values(nextState.errors).some(
+        (error) => error !== ""
+      );
+      const numberOfTouchedInput = Object.keys(nextState.errors).length;
+
+      if (!invalidInput && numberOfTouchedInput === inputList.length) {
+        nextState.isFormValid = true;
+      }
+
+      setIsFormValid(nextState);
+    }
+  }
+
   return (
     <CurrentUserContext.Provider value={currentUser || {}}>
       <div className="page">
@@ -253,18 +295,24 @@ function App() {
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
           onUpdateAvatar={handleUpdateAvatar}
+          formValidate={formValidate}
+          validationData={isFormValid}
         />
 
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
           onUpdateUser={handleUpdateUser}
+          formValidate={formValidate}
+          validationData={isFormValid}
         />
 
         <AddPlacePopup
           isOpen={isAddPlacePopupOpen}
           onClose={closeAllPopups}
           onAddPlace={handleAddPlaceSubmit}
+          formValidate={formValidate}
+          validationData={isFormValid}
         />
 
         <ImagePopup

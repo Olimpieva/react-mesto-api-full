@@ -2,13 +2,15 @@
 import React, { useContext, useState } from "react";
 import PopupWithForm from "./PopupWithForm";
 import { CurrentUserContext } from '../context/CurrentUserContext';
+import FormError from "./FormError";
 
 function EditProfilePopup(props) {
 
-    const { isOpen, onClose, onUpdateUser } = props;
+    const { isOpen, onClose, onUpdateUser, formValidate, validationData: { isFormValid, errors } } = props;
     const currentUser = useContext(CurrentUserContext);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
+    const inputList = ['name', 'description'];
 
     React.useEffect(() => {
         setName(currentUser.name);
@@ -17,6 +19,7 @@ function EditProfilePopup(props) {
 
     const handleInputChange = (event) => {
         event.target.name === 'name' ? setName(event.target.value) : setDescription(event.target.value);
+        formValidate(event.target, inputList);
     }
 
     const handleSubmit = (event) => {
@@ -33,7 +36,9 @@ function EditProfilePopup(props) {
             buttonText="Сохранить"
             isOpen={isOpen}
             onClose={onClose}
-            onSubmit={handleSubmit} >
+            onSubmit={handleSubmit}
+            isButtonEnabled={isFormValid}
+        >
             <fieldset className="popup__input-fieldset">
                 <input className="popup__input popup__input_type_name" id="profile-name" name="name"
                     type="text"
@@ -42,8 +47,13 @@ function EditProfilePopup(props) {
                     placeholder="Введите имя"
                     value={name || ''}
                     onChange={handleInputChange}
-                    required />
-                <span className="popup__input-error" id="profile-name-error"></span>
+                    required
+                />
+                <FormError
+                    isHidden={isFormValid}
+                    name="profile-name"
+                    message={errors['profile-name']}
+                />
             </fieldset>
             <fieldset className="popup__input-fieldset">
                 <input className="popup__input popup__input_type_caption" id="profile-caption" name="description"
@@ -54,7 +64,11 @@ function EditProfilePopup(props) {
                     value={description || ''}
                     onChange={handleInputChange}
                     required />
-                <span className="popup__input-error" id="profile-caption-error"></span>
+                <FormError
+                    isHidden={isFormValid}
+                    name="profile-caption"
+                    message={errors['profile-caption']}
+                />
             </fieldset>
         </PopupWithForm>
     )
