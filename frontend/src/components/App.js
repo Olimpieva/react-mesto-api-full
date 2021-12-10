@@ -31,7 +31,13 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = React.useState('');
   const [status, setStatus] = useState(false);
-  // const [formErrors, setFormErrors] = useState({});
+  const [isFormValid, setIsFormValid] = useState(
+    {
+      isFormValid: false,
+      errors: {}
+    }
+  )
+
 
   const history = useHistory();
   const location = useLocation();
@@ -110,6 +116,12 @@ function App() {
     setIsAddPlacePopupOpen(false);
     setSelectedCard(null);
     setCardToDelete(null);
+    setIsFormValid(
+      {
+        isFormValid: false,
+        errors: {}
+      }
+    )
   }
 
   function handleEditAvatarClick() {
@@ -118,6 +130,12 @@ function App() {
 
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(true);
+    setIsFormValid(
+      {
+        isFormValid: true,
+        errors: {}
+      }
+    )
   }
 
   function handleAddPlaceClick() {
@@ -210,13 +228,6 @@ function App() {
 
     return () => document.removeEventListener('keydown', closeByEscape);
   }, [])
-
-  const [isFormValid, setIsFormValid] = useState(
-    {
-      isFormValid: false,
-      errors: {}
-    }
-  )
 
   function formValidate(input, inputList) {
     const currentInput = input.id;
